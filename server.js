@@ -70,9 +70,9 @@ app.get("/categories", function(req, res){
         })
 });
 
-app.get('*', function(req, res){
-    res.sendFile('/error.html' , { root : __dirname});
-});
+app.use((req,res)=>{
+    res.status(404).sendFile('/error.html' , { root : __dirname})
+})
 
 console.log ("Ready for initialize");
 blogService.initialize()
