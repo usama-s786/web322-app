@@ -1,6 +1,6 @@
 const fs = require("fs") 
 
-var posts = []
+var posts = []      
 var categories = []
 
 module.exports.initialize = () => {
@@ -8,37 +8,33 @@ module.exports.initialize = () => {
     var promise = new Promise((resolve, reject) => {
        
         try {
-
             fs.readFile('./data/posts.json', (err, data) => {
                 if (err) throw err 
 
                 posts = JSON.parse(data) 
                 console.log("INITIALIZE - Posts.") 
             })
-
             fs.readFile('./data/categories.json', (err, data) => {
                 if (err) throw err 
 
                 categories = JSON.parse(data) 
                 console.log("INITIALIZE - Categories.") 
             })
-
-        } catch (ex) {
-                      console.log("INITIALIZE - FAILURE.") 
-                      reject("UNABLE TO READ THE FILE.") 
-                     }
+        }catch (ex) {
+            console.log("INITIALIZE - FAILURE.") 
+            reject("UNABLE TO READ THE FILE.") 
+        }
         console.log("INITIALIZE - SUCCESS.") 
 
         resolve("INITIALIZE - SUCCESS.") 
     })
-
     return promise 
 } 
 
+//function to get all the posts
 module.exports.getAllPosts = () => {
 
     var promise = new Promise((resolve, reject) => {
-        
        if(posts.length === 0) {
         var err = "no results returned" 
         reject({message: err}) 
@@ -49,11 +45,11 @@ module.exports.getAllPosts = () => {
     return promise 
 } 
 
+//function to get the published posts
 module.exports.getPublishedPosts = () => {
 
     var pPosts = [] 
     var promise = new Promise((resolve, reject) => {
-      
        for (var i=0;  i < posts.length;  i++){
            if (posts[i].published == true) {
             pPosts.push(posts[i]) 
@@ -64,12 +60,12 @@ module.exports.getPublishedPosts = () => {
         var err = "no results returned" 
         reject({message: err}) 
        }  
-
     resolve (pPosts) 
     })
     return promise 
 } 
 
+//function to get posts by categories
 module.exports.getCategories = () => {
 
     var promise = new Promise((resolve, reject) => {
@@ -83,8 +79,9 @@ module.exports.getCategories = () => {
      return promise 
 } 
 
+//function to add posts
 module.exports.addPost = (postData) => {
-   
+
     var promise = new Promise((resolve, reject) => {
         postData.published = (postData.published) ? true : false
         postData.id= posts.length+1
@@ -100,7 +97,9 @@ module.exports.addPost = (postData) => {
     return promise 
 }
 
+//function to get posts by category
 module.exports.getPostByCategory = (category) => {
+
     var arrByCategory = [];
     var promise = new Promise((resolve, reject) => {
         
@@ -117,7 +116,9 @@ module.exports.getPostByCategory = (category) => {
     return promise 
 } 
 
+//function to get posts by min date
 module.exports.getPostByMinDate = (minDateStr) => {
+
     var arrByminDate = [];
     var promise = new Promise((resolve, reject) => {
         
@@ -134,7 +135,9 @@ module.exports.getPostByMinDate = (minDateStr) => {
     return promise 
 } 
 
+//function to get posts by id
 module.exports.getPostById = (id) => {
+
     var arrById = [];
     var promise = new Promise((resolve, reject) => {
         

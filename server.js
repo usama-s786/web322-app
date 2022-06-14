@@ -18,9 +18,9 @@ const multer = require("multer");
 const cloudinary = require('cloudinary').v2
 const streamifier = require('streamifier')
 
-var HTTP_PORT = process.env.PORT || 8080
+var HTTP_PORT = process.env.PORT || 8080        //http port
 
-cloudinary.config({
+cloudinary.config({             //cloudinary details
  cloud_name: 'usamasidat',
  api_key: '854176769438177',
  api_secret: 'ajqoPgr6G-GnlFCykF5znnkSsVk',
@@ -34,7 +34,7 @@ function onHttpStart() {
   console.log("Express http server listening on port: " + HTTP_PORT)
 }
 
-app.use(express.static('public'))
+app.use(express.static('public'))       //to load static files
 
 // setup a 'route' to listen on the default url path (http://localhost)
 app.get("/", (req,res)=>{
@@ -46,6 +46,7 @@ app.get("/about", (req,res)=>{
     res.sendFile('views/about.html' , { root : __dirname})
 });
 
+// setup another route to listen on /blog
 app.get("/blog", (req, res)=>{
     blogService.getPublishedPosts()
         .then((data) => {
@@ -58,9 +59,10 @@ app.get("/blog", (req, res)=>{
         })
 });
 
+// setup another route to listen on /posts
 app.get("/posts", (req, res)=>{
     if(req.query.category){
-        blogService.getPostByCategory(req.query.category)
+        blogService.getPostByCategory(req.query.category)   //get by category
         .then((data)=>{
             console.log ("getAllPosts by category displayed.")
             res.json(data)
@@ -71,7 +73,7 @@ app.get("/posts", (req, res)=>{
         })
     }
     else if(req.query.minDate){
-        blogService.getPostByMinDate(req.query.minDate)
+        blogService.getPostByMinDate(req.query.minDate)     //get by min date
         .then((data)=>{
             console.log ("getAllPosts by minDate displayed.")
             res.json(data)
@@ -82,7 +84,7 @@ app.get("/posts", (req, res)=>{
         })
     }
     else{
-        blogService.getAllPosts()
+        blogService.getAllPosts()           //get all posts
             .then((data) => {
             console.log ("getAllPosts displayed.")
             res.json(data)
@@ -94,8 +96,9 @@ app.get("/posts", (req, res)=>{
     }
 });
 
+// setup another route to listen on /post:id
 app.get("/post/:id", (req,res)=>{   
-    blogService.getPostById(req.params.id)
+    blogService.getPostById(req.params.id)          //get by id
             .then((data) => {
             console.log ("getPostById displayed.")
             res.json(data)
@@ -106,6 +109,7 @@ app.get("/post/:id", (req,res)=>{
         })
 })
 
+// setup another route to listen on /categories
 app.get("/categories", (req, res)=>{
     blogService.getCategories()
         .then((data) => {
@@ -118,10 +122,12 @@ app.get("/categories", (req, res)=>{
         })
 });
 
+// setup another route to listen on /posts/add
 app.get("/posts/add", (req,res)=>{
     res.sendFile('views/addPost.html' , { root : __dirname})
 })
 
+// setup another route to post
 app.post("/posts/add", upload.single("featureImage"), (req,res)=>{
 let streamUpload = (req) => {
     return new Promise((resolve, reject) => {
@@ -157,6 +163,7 @@ blogService.addPost(req.body)
 });
 })
 
+// setup another route to redirect to error page if the link is not correct
 app.use((req,res)=>{
     res.status(404).sendFile('/views/error.html' , { root : __dirname})
 })
