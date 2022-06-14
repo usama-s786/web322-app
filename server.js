@@ -1,11 +1,11 @@
 /*********************************************************************************
-* WEB322 – Assignment 02
+* WEB322 – Assignment 03
 * I declare that this assignment is my own work in accordance with Seneca Academic Policy. 
 * No part of this assignment has been copied manually or electronically from any other source (including 3rd party web sites) or distributed to other students.
 *
 * Name: Usama Sidat 
 * Student ID: 131034217
-* Date: 26/05/2022
+* Date: 14/06/2022
 *
 * Online (Heroku) Link: https://stark-wildwood-15403.herokuapp.com/
 *
@@ -156,17 +156,6 @@ blogService.addPost(req.body)
     })
 });
 })
-// })
-//   blogService.addPost(req.body)
-//   .then(()=>{
-//         console.log(req.body)
-//         res.redirect('/posts');
-//     })
-//     .catch((err)=>{
-//         res.send(err);
-//     })
-// })
-// })
 
 app.use((req,res)=>{
     res.status(404).sendFile('/views/error.html' , { root : __dirname})
@@ -180,4 +169,4 @@ blogService.initialize()
     })
     .catch(err => {
         console.log('ERROR MESSAGE:', err.message);
-    })
+})
