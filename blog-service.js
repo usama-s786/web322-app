@@ -84,6 +84,9 @@ module.exports.addPost = (postData) => {
 
     var promise = new Promise((resolve, reject) => {
         postData.published = (postData.published) ? true : false
+        var currentdate = new Date()
+        var date = currentdate.getFullYear() +"-" + (currentdate.getMonth() + 1) + "-" + currentdate.getDate()
+        postData.postDate = date
         postData.id= posts.length+1
         posts.push(postData)
  
@@ -153,3 +156,21 @@ module.exports.getPostById = (id) => {
     })
     return promise 
 } 
+
+module.exports.getPublishedPostsByCategory= (category) =>{
+    var pPosts = [] 
+    var promise = new Promise((resolve, reject) => {
+       for (var i=0;  i < posts.length;  i++){
+           if (posts[i].published == true && posts[i].category == category) {
+            pPosts.push(posts[i]) 
+           }
+       }
+       
+       if(pPosts.length === 0) {
+        var err = "no results returned" 
+        reject({message: err}) 
+       }  
+    resolve (pPosts) 
+    })
+    return promise 
+}
