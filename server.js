@@ -288,7 +288,7 @@ app.post("/posts/add", upload.single("featureImage"), (req, res) => {
     blogService
       .addPost(req.body)
       .then((data) => {
-        res.json(data);
+        res.redirect('/posts');
       })
       .catch((err) => {
         console.log("ERROR MESSAGE:", err.message);
