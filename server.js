@@ -1,11 +1,11 @@
 /*********************************************************************************
- * WEB322 – Assignment 04
+ * WEB322 – Assignment 05
  * I declare that this assignment is my own work in accordance with Seneca Academic Policy.
  * No part of this assignment has been copied manually or electronically from any other source (including 3rd party web sites) or distributed to other students.
  *
  * Name: Usama Sidat
  * Student ID: 131034217
- * Date: 06/07/2022
+ * Date: 22/07/2022
  *
  * Online (Heroku) Link: https://stark-wildwood-15403.herokuapp.com/
  *
@@ -39,6 +39,8 @@ function onHttpStart() {
 
 app.use(express.static("public")); //to load static files
 
+app.use(express.urlencoded({ extended: true }));
+
 //define template engine for our app
 app.engine(
   ".hbs",
@@ -68,6 +70,12 @@ app.engine(
       },
       safeHTML: function (context) {
         return stripJs(context);
+      },
+      formatDate: function (dateObj) {
+        let year = dateObj.getFullYear();
+        let month = (dateObj.getMonth() + 1).toString();
+        let day = dateObj.getDate().toString();
+        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
       },
     },
   })
@@ -196,7 +204,10 @@ app.get("/posts", (req, res) => {
       .getPostByCategory(req.query.category) //get by category
       .then((data) => {
         console.log("getAllPosts by category displayed.");
-        res.render("posts", { posts: data });
+        if (data.length > 0)
+          res.render("posts", { posts: data });
+        else
+          res.render("posts", { message: "no results" });
       })
       .catch((err) => {
         console.log("ERROR MESSAGE:", err.message);
@@ -207,7 +218,10 @@ app.get("/posts", (req, res) => {
       .getPostByMinDate(req.query.minDate) //get by min date
       .then((data) => {
         console.log("getAllPosts by minDate displayed.");
-        res.render("posts", { posts: data });
+        if (data.length > 0)
+          res.render("posts", { posts: data });
+        else
+          res.render("posts", { message: "no results" });
       })
       .catch((err) => {
         console.log("ERROR MESSAGE:", err.message);
@@ -218,7 +232,10 @@ app.get("/posts", (req, res) => {
       .getAllPosts() //get all posts
       .then((data) => {
         console.log("getAllPosts displayed.");
-        res.render("posts", { posts: data });
+        if (data.length > 0)
+          res.render("posts", { posts: data });
+        else
+          res.render("posts", { message: "no results" });
       })
       .catch((err) => {
         console.log("ERROR MESSAGE:", err.message);
@@ -247,20 +264,35 @@ app.get("/categories", (req, res) => {
     .getCategories()
     .then((data) => {
       console.log("getCategories displayed.");
-      res.render("categories", { categories: data });
+      if (data.length > 0)
+        res.render("categories", { categories: data });
+      else
+        res.render("categories", { message: "no results" })
     })
     .catch((err) => {
-      console.log("ERROR MESSAGE:", err.message);
-      res.render("categories", { message: "no results" });
+      console.log("ERROR MESSAGE:", err.message)
+      res.render("categories", { message: "no results" })
     });
 });
 
 // setup another route to listen on /posts/add
 app.get("/posts/add", (req, res) => {
-  res.render("addPost");
+  blogService.getCategories()
+    .then((data) => {
+      res.render("addPost", { categories: data })
+    })
+    .catch(() => {
+      res.render("addPost", { categories: [] })
+    })
+
 });
 
-// setup another route to post
+// setup another route to listen on /categories/add
+app.get("/categories/add", (req, res) => {
+  res.render("addCategory");
+});
+
+// setup another route to add a post
 app.post("/posts/add", upload.single("featureImage"), (req, res) => {
   let streamUpload = (req) => {
     return new Promise((resolve, reject) => {
@@ -296,6 +328,43 @@ app.post("/posts/add", upload.single("featureImage"), (req, res) => {
   });
 });
 
+// setup another route to add category
+app.post("/categories/add", (req, res) => {
+  blogService
+    .addCategory(req.body)
+    .then(() => {
+      res.redirect('/categories');
+    })
+    .catch((err) => {
+      console.log("ERROR MESSAGE:", err.message);
+    });
+});
+
+// setup another route to delete category by id
+app.get("/categories/delete/:id", (req, res) => {
+  blogService
+    .deleteCategoryById(req.params.id)
+    .then(() => {
+      res.redirect('/categories');
+    })
+    .catch((err) => {
+      console.log("Unable to remove category/ Category not found")
+      console.log("ERROR MESSAGE:", err.message);
+    });
+});
+
+// setup another route to delete post by id
+app.get("/posts/delete/:id", (req, res) => {
+  blogService
+    .deletePostById(req.params.id)
+    .then(() => {
+      res.redirect('/posts');
+    })
+    .catch(() => {
+      console.log("Unable to remove post/ Post not found")
+    });
+});
+
 // setup another route to redirect to error page if the link is not correct
 app.use((req, res) => {
   res.status(404).render("error");
@@ -311,3 +380,4 @@ blogService
   .catch((err) => {
     console.log("ERROR MESSAGE:", err.message);
   });
+
